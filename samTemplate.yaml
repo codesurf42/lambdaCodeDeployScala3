@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Outputs the time 3
+Resources:
+  scala3:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'example.Main::getSourceBuckets'
+      Runtime: java8
+      CodeUri: .
+      Description: ''
+      MemorySize: 192
+      Timeout: 15
+
