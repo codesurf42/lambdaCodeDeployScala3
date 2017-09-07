@@ -4,8 +4,9 @@ phases:
     commands:
       - echo Build starts `date`
       - sbt compile assembly
-  install:
+  post_build:
     commands:
+      - echo post_build `date`
       - mkdir -p deploy/lib
       - cp target/scala-2.12/awsLambda.jar deploy/lib
       - aws cloudformation package --template-file samTemplate.yaml --s3-bucket lambda-codedeploy-test1 --output-template-file NewSamTemplate.yaml || exit 0
