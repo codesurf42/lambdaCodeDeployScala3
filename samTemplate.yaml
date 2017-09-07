@@ -7,7 +7,7 @@ Resources:
     Properties:
       Handler: 'example.Main::getSourceBuckets'
       Runtime: java8
-      CodeUri: .
+      CodeUri: target/scala-2.12/awsLambda.jar
       Description: ''
       MemorySize: 192
       Timeout: 15
