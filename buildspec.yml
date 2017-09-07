@@ -1,18 +1,17 @@
-version: 0.1
+version: 0.2
+
 phases:
   build:
     commands:
-      - echo Build starts `date`
+      - echo build `date`
       - sbt compile assembly
   post_build:
     commands:
       - echo post_build `date`
-      - mkdir -p deploy/lib
-      - cp target/scala-2.12/awsLambda.jar deploy/lib
       - aws cloudformation package --template-file samTemplate.yaml --s3-bucket lambda-codedeploy-test1 --output-template-file NewSamTemplate.yaml || exit 0
 artifacts:
   type: zip
   files:
-    - deploy/lib/awsLambda.jar
+    - target/scala-2.12/awsLambda.jar
     - NewSamTemplate.yaml
 
