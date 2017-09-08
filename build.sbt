@@ -16,4 +16,3 @@ lazy val root = (project in file(".")).
     assemblyJarName in assembly := "awsLambda.jar"
   )
 
-// merge strategy - needed?
