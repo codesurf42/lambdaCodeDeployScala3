@@ -2,33 +2,41 @@ package example
 
 import scala.collection.JavaConverters._
 import java.net.URLDecoder
+import java.nio.ByteBuffer
 
 import com.amazonaws.services.lambda.runtime.events.{KinesisEvent, S3Event}
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.amazonaws.services.s3.model.PutObjectResult
+
+import scala.collection.mutable.ArrayBuffer
+
 
 class EventHandler {
+
+  type EventsNumber = Int
 
   val s3Client = AmazonS3ClientBuilder.defaultClient()
   def decodeS3Key(key: String): String = URLDecoder.decode(key.replace("+", " "), "utf-8")
 
-  def processEvent(event: KinesisEvent) = {
+  def processEvent(event: KinesisEvent): EventsNumber = {
     println(s"event: $event")
-    val res1 = event.getRecords
-    val res2 = res1.asScala
+    val res1 = Option(event.getRecords).map(_.asScala).getOrElse(ArrayBuffer.empty)
+    println(s"event r1: $res1")
+    println(s"event r1: ${res1.size}")
 
-    val events = res2.map { record =>
+    val events = res1.map { record =>
       println(s"record: $record")
       // log.debug("processing... ")
       val data = record.getKinesis.getData
       
       println(s"processing ${record.getEventID} => $data")
 
-      processMessageData(data.toString)
+      processMessageData(bytes2String(data))
     }
 
-    events.foreach { event =>
+    events.map { event =>
       storeInS3(event)
-    }
+    }.size
     
   }
 
@@ -37,8 +45,13 @@ class EventHandler {
     in + "_lambda"
   }
 
-  def storeInS3(messsage: String) = {
-    s3Client.putObject("bucket1", "key1", messsage)
+  def bytes2String(buffer: ByteBuffer): String = {
+    new String(buffer.array())
+  }
+
+  def storeInS3(message: String) = {
+    println(s"storeInS3: $message")
+    // s3Client.putObject("bucket1", "key1", messsage)
   }
 
   def getSourceBuckets(event: S3Event): java.util.List[String] = {
