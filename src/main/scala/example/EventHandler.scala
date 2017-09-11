@@ -12,9 +12,15 @@ class EventHandler {
   def decodeS3Key(key: String): String = URLDecoder.decode(key.replace("+", " "), "utf-8")
 
   def processEvent(event: KinesisEvent) = {
-    val events = event.getRecords.asScala.map { record =>
+    println(s"event: $event")
+    val res1 = event.getRecords
+    val res2 = res1.asScala
+
+    val events = res2.map { record =>
+      println(s"record: $record")
       // log.debug("processing... ")
       val data = record.getKinesis.getData
+      
       println(s"processing ${record.getEventID} => $data")
 
       processMessageData(data.toString)
