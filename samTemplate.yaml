@@ -5,7 +5,7 @@ Resources:
   scala3:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: 'example.Main::getSourceBuckets'
+      Handler: 'example.EventHandler::processEvent'
       Runtime: java8
       CodeUri: target/scala-2.12/awsLambda.jar
       Description: ''
