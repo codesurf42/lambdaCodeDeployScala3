@@ -4,6 +4,7 @@ import scala.collection.JavaConverters._
 import java.net.URLDecoder
 import java.nio.ByteBuffer
 
+import com.amazonaws.{ClientConfiguration, ClientConfigurationFactory}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.{KinesisEvent, S3Event}
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
@@ -28,12 +29,14 @@ object LambdaHandler {
 }
 
 class S3Client {
-  val s3Client = AmazonS3ClientBuilder.defaultClient()
+
+  val awsConfig = (new ClientConfiguration).withConnectionTimeout(4 * 1000)
+  val s3Client = AmazonS3ClientBuilder.standard().withClientConfiguration(awsConfig).build()
   def store(message: MessageContent): MessageId = {
     println(s"Storing in S3: $message")
-//    val res = s3Client.putObject("lambda3-storage1", "key1", message)
-//    s"${res.getETag}--${res.getVersionId}"
-    "ETag+versionId"
+    val res = s3Client.putObject("lambda3-storage1", "key1", message)
+    s"${res.getETag}--${res.getVersionId}"
+    // "ETag+versionId"
   }
 }
 
