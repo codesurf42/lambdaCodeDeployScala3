@@ -31,8 +31,9 @@ class S3Client {
   val s3Client = AmazonS3ClientBuilder.defaultClient()
   def store(message: MessageContent): MessageId = {
     println(s"Storing in S3: $message")
-    val res = s3Client.putObject("lambda3-storage1", "key1", message)
-    s"${res.getETag}--${res.getVersionId}"
+//    val res = s3Client.putObject("lambda3-storage1", "key1", message)
+//    s"${res.getETag}--${res.getVersionId}"
+    "ETag+versionId"
   }
 }
 
