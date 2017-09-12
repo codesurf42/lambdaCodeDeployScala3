@@ -9,5 +9,5 @@ Resources:
       Runtime: java8
       CodeUri: target/scala-2.12/awsLambda.jar
       Description: ''
-      MemorySize: 192
+      MemorySize: 384
       Timeout: 15
