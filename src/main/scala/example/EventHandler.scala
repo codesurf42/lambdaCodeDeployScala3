@@ -29,10 +29,10 @@ object LambdaHandler {
 
 class S3Client {
   val s3Client = AmazonS3ClientBuilder.defaultClient()
-  def store(data: MessageContent): MessageId = {
-    println("Storing in S3")
-    // s3Client.putObject("bucket1", "key1", messsage)
-    "ETag+versionId"
+  def store(message: MessageContent): MessageId = {
+    println(s"Storing in S3: $message")
+    val res = s3Client.putObject("lambda3-storage1", "key1", message)
+    s"${res.getETag}--${res.getVersionId}"
   }
 }
 
@@ -69,16 +69,5 @@ class EventHandler(storeInS3: MessageContent => MessageId) {
 
   def bytes2String(buffer: ByteBuffer): String = {
     new String(buffer.array())
-  }
-  
-  def getSourceBuckets(event: S3Event): java.util.List[String] = {
-    val res1 = event.getRecords
-    val res2 = res1.asScala
-    val res3 = res2.map { record =>
-      decodeS3Key(record.getS3.getObject.getKey)
-    }
-    val res4 = res3
-    println(s"res: $res4")
-    res4.asJava
   }
 }
