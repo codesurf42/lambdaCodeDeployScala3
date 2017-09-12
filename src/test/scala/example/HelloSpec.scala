@@ -5,16 +5,21 @@ import java.nio.ByteBuffer
 import scala.collection.JavaConverters._
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord
+import example.messages._
 import org.scalatest._
 
 class EventHandlerSpec extends FlatSpec with Matchers {
+
+  def s3Put(s:MessageContent): MessageId = "id"
+  def ehBuild = new EventHandler(s3Put)
+
   "The EventHandler object" should "decode url" in {
-    val eh = new EventHandler()
+    val eh = ehBuild
     eh.decodeS3Key("foo") shouldEqual "foo"
     eh.decodeS3Key("foo%20bar") shouldEqual "foo bar"
   }
   "The EventHandler object" should "processMessageData" in {
-    val eh = new EventHandler()
+    val eh = ehBuild
     eh.processMessageData("event-1") shouldEqual("event-1_lambda")
   }
 
@@ -29,7 +34,7 @@ class EventHandlerSpec extends FlatSpec with Matchers {
     val event = new KinesisEvent()
     event.setRecords(List(record).asJava)
 
-    val eh = new EventHandler()
+    val eh = ehBuild
     eh.processEvent(event) shouldBe 1
   }
 }
