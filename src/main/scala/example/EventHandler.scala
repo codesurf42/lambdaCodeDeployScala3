@@ -23,7 +23,7 @@ object LambdaHandler {
   val s3 = new S3Client
   val eh = new EventHandler(s3.store)
   def processEvent(event: KinesisEvent) = {
-
+    eh.processEvent(event)
   }
 }
 
