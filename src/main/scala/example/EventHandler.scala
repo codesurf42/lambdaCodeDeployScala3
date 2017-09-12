@@ -30,11 +30,13 @@ object LambdaHandler {
 
 class S3Client {
 
-  val awsConfig = (new ClientConfiguration).withConnectionTimeout(4 * 1000)
+  val timeout = 3 * 1000
+  val awsConfig = (new ClientConfiguration).withConnectionTimeout(timeout).withRequestTimeout(timeout)
   val s3Client = AmazonS3ClientBuilder.standard().withClientConfiguration(awsConfig).build()
   def store(message: MessageContent): MessageId = {
     println(s"Storing in S3: $message")
     val res = s3Client.putObject("lambda3-storage1", "key1", message)
+    println(s"Storing in S3-after: $message")
     s"${res.getETag}--${res.getVersionId}"
     // "ETag+versionId"
   }
