@@ -11,7 +11,8 @@ import org.scalatest._
 class EventHandlerSpec extends FlatSpec with Matchers {
 
   def s3Put(s:MessageContent): MessageId = "id"
-  def ehBuild = new EventHandler(s3Put)
+  def dynamoDbGetFact(s:FactId): Submission = "dynamoSub"
+  def ehBuild = new EventHandler(s3Put, dynamoDbGetFact)
 
   "The EventHandler object" should "decode url" in {
     val eh = ehBuild
@@ -20,7 +21,8 @@ class EventHandlerSpec extends FlatSpec with Matchers {
   }
   "The EventHandler object" should "processMessageData" in {
     val eh = ehBuild
-    eh.processMessageData("event-1") shouldEqual("event-1_lambda")
+    eh.processMessageData("event-1") should startWith("event-1_lambda")
+    eh.processMessageData("event-1") should include("dynamoSub")
   }
 
   "The EventHandler" should "processEvent" in {

@@ -4,12 +4,14 @@ import scala.collection.JavaConverters._
 import java.net.URLDecoder
 import java.nio.ByteBuffer
 
+import com.amazonaws.services.dynamodbv2.document.DynamoDB
+import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsyncClientBuilder, AmazonDynamoDBClientBuilder}
 import com.amazonaws.{ClientConfiguration, ClientConfigurationFactory}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.{KinesisEvent, S3Event}
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.PutObjectResult
-import example.messages.{EventsNumber, MessageContent, MessageId}
+import example.messages._
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -17,12 +19,15 @@ object messages {
   type MessageContent = String
   type MessageId = String
   type EventsNumber = Int
+  type FactId = String
+  type Submission = String
 
 }
 
 object LambdaHandler {
   val s3 = new S3Client
-  val eh = new EventHandler(s3.store)
+  val dyn = new DynamoDbClient
+  val eh = new EventHandler(s3.store, dyn.getFactSubmission)
   def processEvent(event: KinesisEvent) = {
     eh.processEvent(event)
   }
@@ -43,7 +48,22 @@ class S3Client {
   }
 }
 
-class EventHandler(storeInS3: MessageContent => MessageId) {
+class DynamoDbClient {
+  val timeout = 3 * 1000
+  val awsConfig = (new ClientConfiguration()).withConnectionTimeout(timeout).withRequestTimeout(timeout)
+  val client = AmazonDynamoDBClientBuilder.defaultClient()
+  val docClient = new DynamoDB(client)
+  val tableFact = "nr_facts"
+  val table = docClient.getTable(tableFact)
+
+  def getFactSubmission(factId: String): Submission = {
+    val res = table.getItemOutcome("factId", factId)
+    res.getItem.getNumber("submission").toPlainString
+  }
+
+}
+
+class EventHandler(storeInS3: MessageContent => MessageId, factRetrieve: FactId => Submission) {
 
   def decodeS3Key(key: String): String = URLDecoder.decode(key.replace("+", " "), "utf-8")
 
@@ -71,7 +91,8 @@ class EventHandler(storeInS3: MessageContent => MessageId) {
 
   def processMessageData(in: String): String = {
     println(s"processing data=$in") // TODO logs
-    in + "_lambda"
+    val submission = factRetrieve("GkInqwe897")
+    s"${in}_lambda_dyn:$submission"
   }
 
   def bytes2String(buffer: ByteBuffer): String = {

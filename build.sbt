@@ -1,6 +1,6 @@
 import Dependencies._
 
-lazy val awsVersion = "1.11.192"
+lazy val awsVersion = "1.11.195"
 
 lazy val root = (project in file(".")).
   settings(
@@ -15,6 +15,7 @@ lazy val root = (project in file(".")).
       "com.amazonaws" % "aws-lambda-java-events" % "1.3.0",
       "com.amazonaws" % "aws-java-sdk-bom" % awsVersion,
       "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
+      "com.amazonaws" % "aws-java-sdk-dynamodb" % awsVersion,
       scalaTest % Test
     ),
     assemblyJarName in assembly := "awsLambda.jar"
