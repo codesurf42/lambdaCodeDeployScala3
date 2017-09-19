@@ -1,6 +1,6 @@
 import Dependencies._
 
-lazy val awsVersion = "1.11.195"
+lazy val awsVersion = "1.11.198"
 
 lazy val root = (project in file(".")).
   settings(
