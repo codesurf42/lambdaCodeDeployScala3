@@ -91,7 +91,9 @@ class EventHandler(storeInS3: MessageContent => MessageId, factRetrieve: FactId 
 
   def processMessageData(in: String): String = {
     println(s"processing data=$in") // TODO logs
-    val submission = factRetrieve("GkInqwe897")
+
+    val factId = "GkInqwe897"
+    val submission = factRetrieve(factId)
     s"${in}_lambda_dyn:$submission"
   }
 
