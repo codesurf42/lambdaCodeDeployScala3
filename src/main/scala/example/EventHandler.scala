@@ -75,7 +75,6 @@ class EventHandler(storeInS3: MessageContent => MessageId, factRetrieve: FactId 
 
     val events = res1.map { record =>
       println(s"record: $record")
-      // log.debug("processing... ")
       val data = record.getKinesis.getData
       
       println(s"processing ${record.getEventID} => $data")
