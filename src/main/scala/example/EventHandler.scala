@@ -1,18 +1,16 @@
 package example
 
-import scala.collection.JavaConverters._
 import java.net.URLDecoder
 import java.nio.ByteBuffer
 
+import com.amazonaws.ClientConfiguration
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
-import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsyncClientBuilder, AmazonDynamoDBClientBuilder}
-import com.amazonaws.{ClientConfiguration, ClientConfigurationFactory}
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.events.{KinesisEvent, S3Event}
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
-import com.amazonaws.services.s3.model.PutObjectResult
 import example.messages._
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 
 object messages {
@@ -21,7 +19,10 @@ object messages {
   type EventsNumber = Int
   type FactId = String
   type Submission = String
+}
 
+object const {
+  val timeout = 3 * 1000
 }
 
 object LambdaHandler {
@@ -34,9 +35,8 @@ object LambdaHandler {
 }
 
 class S3Client {
-
-  val timeout = 3 * 1000
-  val awsConfig = (new ClientConfiguration).withConnectionTimeout(timeout).withRequestTimeout(timeout)
+  import const.timeout
+  val awsConfig = new ClientConfiguration().withConnectionTimeout(timeout).withRequestTimeout(timeout)
 //  val s3Client = AmazonS3ClientBuilder.standard().withClientConfiguration(awsConfig).build()
   val s3Client = AmazonS3ClientBuilder.defaultClient()
   def store(message: MessageContent): MessageId = {
@@ -49,8 +49,8 @@ class S3Client {
 }
 
 class DynamoDbClient {
-  val timeout = 3 * 1000
-  val awsConfig = (new ClientConfiguration()).withConnectionTimeout(timeout).withRequestTimeout(timeout)
+  import const.timeout
+  val awsConfig = new ClientConfiguration().withConnectionTimeout(timeout).withRequestTimeout(timeout)
   val client = AmazonDynamoDBClientBuilder.defaultClient()
   val docClient = new DynamoDB(client)
   val tableFact = "nr_facts"
