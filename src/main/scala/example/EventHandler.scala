@@ -37,8 +37,7 @@ object LambdaHandler {
 class S3Client {
   import const.timeout
   val awsConfig = new ClientConfiguration().withConnectionTimeout(timeout).withRequestTimeout(timeout)
-//  val s3Client = AmazonS3ClientBuilder.standard().withClientConfiguration(awsConfig).build()
-  val s3Client = AmazonS3ClientBuilder.defaultClient()
+  val s3Client = AmazonS3ClientBuilder.standard().withClientConfiguration(awsConfig).build()
   def store(message: MessageContent): MessageId = {
     println(s"Storing in S3: $message")
     val res = s3Client.putObject("lambda3-storage1", "key1", message)
@@ -51,7 +50,7 @@ class S3Client {
 class DynamoDbClient {
   import const.timeout
   val awsConfig = new ClientConfiguration().withConnectionTimeout(timeout).withRequestTimeout(timeout)
-  val client = AmazonDynamoDBClientBuilder.defaultClient()
+  val client = AmazonDynamoDBClientBuilder.standard().withClientConfiguration(awsConfig).build()
   val docClient = new DynamoDB(client)
   val tableFact = "nr_facts"
   val table = docClient.getTable(tableFact)
